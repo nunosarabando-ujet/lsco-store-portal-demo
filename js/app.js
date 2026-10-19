@@ -33,6 +33,9 @@
       tickets: D.incidents.filter(i => i.storeId === s.store_id && !['Resolved', 'Closed'].includes(i.state)).length,
       orders: D.orders.filter(o => o.storeId === s.store_id && o.active && !o.fm).length,
       approvals: D.approvals.filter(a => a.storeId === s.store_id).length,
+      tech: D.incidents.filter(i => i.storeId === s.store_id && i.category !== 'Facilities' && !['Resolved', 'Closed'].includes(i.state)).length,
+      ops: (D.opsRequests || []).filter(o => o.storeId === s.store_id).length,
+      questions: (D.questions || []).filter(q => q.storeId === s.store_id).length,
       fm: D.orders.filter(o => o.storeId === s.store_id && o.active && o.fm).length
     };
   }
@@ -40,22 +43,16 @@
   // ---------- shell ----------
   function shell() {
     const s = session(); const p = me(); const l = L(); const D = data();
-    $('#brand-sub').textContent = l.brandSub;
-    $('#search-input').placeholder = l.search;
     $('#lang-toggle').textContent = uiLang === 'pt' ? 'EN' : 'PT';
     $('#user-area').innerHTML = s && p
-      ? `<a href="#/profile" class="user-chip" title="${esc(p.name)}"><span class="avatar">${esc(p.avatar)}</span><span class="user-meta"><b>${esc(p.name)}</b><small>${esc(p.role)} · #${esc(p.storeId)}</small></span></a><button class="btn ghost sm" id="signout">${l.signOut}</button>`
-      : `<a href="#/login" class="btn primary sm">${l.signIn}</a>`;
+      ? `<a href="#/profile" class="circle avatar-c" title="${esc(p.name)} · ${esc(p.role)}">${esc(p.avatar)}</a><button class="circle" id="signout" title="${l.signOut}" aria-label="${l.signOut}">⏻</button>`
+      : `<a href="#/login" class="circle" title="${l.signIn}" aria-label="${l.signIn}">→</a>`;
     const so = $('#signout'); if (so) so.onclick = () => { Chat.Session.clear(); location.hash = '#/welcome'; Chat.restart(); };
     const ban = $('#outage-banner');
     const show = D.outage && D.outage.active && (!s || (store(s.store_id) || {}).region === D.outage.region);
     ban.hidden = !show;
     if (show) ban.innerHTML = `<span class="pulse"></span><span>${esc(l.outageBanner)}</span><a href="#/tickets/${esc(D.outage.parent)}">${l.viewIncident} ${esc(D.outage.parent)} →</a>`;
     $('#footer-text').textContent = l.demoFooter;
-    document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', location.hash.startsWith(a.getAttribute('href'))));
-    $('#subnav').hidden = !s;
-    if (s) $('#subnav').innerHTML = [['#/home', L().home], ['#/tickets', l.tickets], ['#/orders', l.orders], ['#/devices', l.devices], ['#/fixtures', l.tiles.fm[0]], ['#/kb', l.kb], ['#/store', l.store]]
-      .map(([h, t]) => `<a href="${h}" class="${location.hash.startsWith(h) ? 'active' : ''}">${esc(t)}</a>`).join('');
   }
 
   // ---------- helpers ----------
@@ -89,19 +86,30 @@
   };
   V.login = () => {
     const l = L(); const P = DemoData.get().personas;
-    return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><span class="logo-mark">LS&amp;Co.</span></div><h1>${l.signInTitle}</h1><p class="muted">${l.signInLead}</p>
+    return `<div class="login-wrap"><div class="login-card"><div class="login-logo"><span class="logo"><span class="logo-ls">LS<br>&amp;CO.</span><span class="togo">TO GO »</span></span></div><h1>${l.signInTitle}</h1><p class="muted">${l.signInLead}</p>
       ${Object.values(P).map(p => `<button class="persona" data-persona="${p.id}"><span class="avatar lg">${p.avatar}</span><span><b>${l.continueAs} ${esc(p.name)}</b><small>${esc(p.role)} · #${p.storeId} ${esc(store(p.storeId).name)} · ${p.language === 'pt' ? 'Português (PT)' : 'English'}</small></span><span class="arrow">→</span></button>`).join('')}
       <p class="sso-note">🔒 SSO · Microsoft Entra ID <em>(simulated for demo)</em></p></div></div>`;
   };
   V.home = () => {
-    const l = L(); const p = me(); const c = counts(); const s = store(p.storeId);
-    const tiles = [['it', '🛠️', '#/support/it'], ['tickets', '🎫', '#/tickets'], ['orders', '📦', '#/orders'], ['devices', '📱', '#/devices'], ['fm', '🧍', '#/fixtures'], ['facilities', '🏬', '#/support/facilities'], ['hr', '👥', '#/support/hr'], ['kb', '📘', '#/kb']];
-    const counter = (k, label, href) => `<a class="counter ${lastCounts[k] != null && c[k] > lastCounts[k] ? 'bump' : ''}" href="${href}"><b data-count="${k}">${c[k]}</b><span>${esc(label)}</span></a>`;
-    return `<section class="welcome-band"><div><h1>${l.hello}, ${esc(p.firstName)}</h1><p class="lead">${l.homeLead}</p></div>
-      <div class="store-pill ${s.status === 'down' ? 'down' : ''}"><span class="dot"></span>#${s.id} ${esc(s.name)} · ${s.status === 'down' ? l.offline : l.online}</div></section>
-      <div class="home-grid"><section class="tiles">${tiles.map(([k, i, h]) => `<a class="tile big" href="${h}"><span class="ti">${i}</span><b>${esc(l.tiles[k][0])}</b><small>${esc(l.tiles[k][1])}</small></a>`).join('')}</section>
-      <aside class="open-items"><h3>${l.openItems}</h3>${counter('tickets', l.openTickets, '#/tickets')}${counter('orders', l.openOrders, '#/orders')}${counter('approvals', l.pendingApprovals, '#/orders')}${counter('fm', l.fmOrders, '#/fixtures')}</aside></div>
+    const l = L(); const p = me(); const c = counts(); const st = store(p.storeId);
+    const hub = [['tech', '#/support/it', 'red'], ['ops', '#/ops', 'red'], ['hss', '#/support/hss', 'red'], ['itauto', '#/it', 'red'], ['fac', '#/support/facilities', 'blue'], ['dm', '#/support/dm', 'dm'], ['fm', '#/fixtures', 'grey']];
+    const box = (k, label, href, live) => `<a class="ocount ${live ? 'live' : ''} ${lastCounts[k] != null && c[k] > lastCounts[k] ? 'bump' : ''}" href="${href}"><b>${c[k]}</b><span>${esc(label)}${live ? ` <em>● ${l.updatedLive}</em>` : ''}</span></a>`;
+    return `<section class="greet"><p>${l.hello}, ${esc(p.name)}</p><h1>${l.whatSupport}</h1></section>
+      <form class="hsearch" id="home-search"><input id="home-search-input" type="search" placeholder="${uiLang === 'pt' ? 'Pesquisar' : 'Search'}" aria-label="Search"></form>
+      <section class="hub">${hub.map(([k, h, tone]) => `<a class="hub-card ${tone}" href="${h}"><span class="hub-dot"></span><span class="hub-txt"><b>${esc(l.hub[k][0])}</b><small>${esc(l.hub[k][1])}</small></span><span class="hub-chev">›</span></a>`).join('')}</section>
+      <h2 class="oi-title">${l.openItemsStore} #${esc(st.id)}${st.status === 'down' ? ` <span class="badge r">${l.offline}</span>` : ''}</h2>
+      <section class="ogrid">${box('tech', l.techIssues, '#/tickets')}${box('ops', l.opsReq, '#/ops')}${box('questions', l.questions, '#/tickets')}${box('orders', l.hwOrders, '#/orders', true)}</section>
       ${awaitingCard()}`;
+  };
+  V.ops = () => {
+    const l = L(); const s = session(); const rows = (data().opsRequests || []).filter(o => o.storeId === s.store_id);
+    return crumbs([['#/home', l.home], ['', l.opsTitle]]) + `<h1>${l.opsTitle}</h1>` +
+      table([[l.number, r => `<b>${esc(r.number)}</b>`], [l.summary, r => esc(r.short)], [l.team, r => esc(r.team)], [l.state, r => badge(r.state)], [l.opened, r => esc(r.opened)]], rows, () => '#/ops');
+  };
+  V.itauto = () => {
+    const l = L(); const items = [['📦', l.orders, '#/orders'], ['📱', l.devices, '#/devices'], ['🎫', l.tickets, '#/tickets'], ['📶', l.store, '#/store'], ['📘', l.kb, '#/kb']];
+    return crumbs([['#/home', l.home], ['', l.hub.itauto[0]]]) + `<h1>${l.hub.itauto[0]}</h1><p class="muted">${l.hub.itauto[1]}</p>
+      <div class="cards">${items.map(([i, t, h]) => `<a class="tile" href="${h}"><span class="ti">${i}</span><b>${esc(t)}</b></a>`).join('')}</div>`;
   };
   function awaitingCard() {
     const s = session(); const i = data().incidents.find(x => x.storeId === s.store_id && x.holdReason === 'Awaiting Caller');
@@ -110,8 +118,10 @@
   }
   V.support = cat => {
     const l = L(); const map = {
-      it: { t: l.tiles.it[0], items: uiLang === 'pt' ? ['A caixa 2 está bloqueada', 'Erro E-204 no terminal de pagamento', 'Não consigo entrar no iPad', 'Wi-Fi do armazém em baixo'] : ['Till 2 is frozen', 'Card reader says E-204', 'I can\'t log in to the iPad', 'Stockroom Wi-Fi is down'] },
-      facilities: { t: l.tiles.facilities[0], items: uiLang === 'pt' ? ['O estore está encravado', 'Luz do provador avariada', 'Ar condicionado não funciona'] : ['Roller shutter is stuck', 'Fitting room light is out', 'HVAC not cooling'] },
+      it: { t: l.hub.tech[0], items: uiLang === 'pt' ? ['A caixa 2 está bloqueada', 'Erro E-204 no terminal de pagamento', 'Não consigo entrar no iPad', 'Wi-Fi do armazém em baixo'] : ['Till 2 is frozen', 'Card reader says E-204', 'I can\'t log in to the iPad', 'Stockroom Wi-Fi is down'] },
+      facilities: { t: l.hub.fac[0], items: uiLang === 'pt' ? ['O estore está encravado', 'Luz do provador avariada', 'Ar condicionado não funciona'] : ['Roller shutter is stuck', 'Fitting room light is out', 'HVAC not cooling'] },
+      hss: { t: l.hub.hss[0], items: uiLang === 'pt' ? ['Cliente escorregou na entrada', 'Porta de emergência bloqueada'] : ['Customer slipped at the entrance', 'Fire exit is blocked by stock'] },
+      dm: { t: l.hub.dm[0], items: uiLang === 'pt' ? ['Pedir visita do District Manager', 'Estado do meu pedido ao DM'] : ['Request a District Manager visit', 'Status of my DM ticket'] },
       hr: { t: l.tiles.hr[0], items: uiLang === 'pt' ? ['Dúvida sobre o meu recibo'] : ['Question about my payslip'] }
     };
     const m = map[cat] || map.it;
@@ -215,18 +225,21 @@
       welcome: () => V.welcome(), locations: () => parts[1] ? V.location(parts[1]) : V.locations(), login: () => V.login(), home: () => V.home(),
       support: () => V.support(parts[1]), tickets: () => parts[1] ? V.ticket(parts[1]) : V.tickets(), orders: () => parts[1] ? V.order(parts[1]) : V.orders(),
       devices: () => parts[1] ? V.device(parts[1]) : V.devices(), kb: () => parts[1] ? V.kbArticle(parts[1]) : V.kb(), store: () => V.store(), fixtures: () => V.fixtures(),
-      profile: () => V.profile(), search: () => V.search(new URLSearchParams(query || '').get('q'))
+      profile: () => V.profile(), ops: () => V.ops(), it: () => V.itauto(), search: () => V.search(new URLSearchParams(query || '').get('q'))
     }[root];
     return r ? r() : V.notfound();
   }
   function render(keepScroll) {
     const html = route(); if (html == null) return;
     const y = window.scrollY;
-    $('#view').innerHTML = html; shell();
+    const root = (location.hash.replace(/^#\/?/, '').split(/[/?]/)[0]) || 'home';
+    const bare = ['home', 'login', 'welcome', ''].includes(root);
+    $('#view').innerHTML = bare ? html : `<div class="sheet">${html}</div>`;
+    $('#view').dataset.root = root; shell();
+    const hs = $('#home-search'); if (hs) hs.onsubmit = e => { e.preventDefault(); location.hash = '#/search?q=' + encodeURIComponent($('#home-search-input').value); };
     lastCounts = counts();
     if (!keepScroll) window.scrollTo(0, 0); else window.scrollTo(0, y);
-    const sub = $('#subnav'); const sh = sub.hidden ? 0 : sub.offsetHeight;
-    $('#chat-panel').style.top = (60 + sh) + 'px'; fitChat();
+    fitChat();
   }
 
   // ---------- events ----------
@@ -241,7 +254,7 @@
     if (e.shiftKey && (e.key === 'P' || e.key === 'p') && !e.target.matches('input,textarea')) togglePresenter();
   });
   window.addEventListener('hashchange', () => render());
-  window.addEventListener('storage', e => { if (e.key === 'lsco_demo_state_v1') { DemoData.reload(); render(true); } });
+  window.addEventListener('storage', e => { if (e.key === 'lsco_demo_state_v2') { DemoData.reload(); render(true); } });
 
   function setLang(l, silent) {
     uiLang = l; document.documentElement.lang = l === 'pt' ? 'pt-PT' : 'en';
@@ -289,8 +302,8 @@
   };
   function fitChat() {
     const c = $('#chat-panel'); if (getComputedStyle(c).position !== 'sticky') { c.style.height = ''; return; }
-    const top = Math.max(c.getBoundingClientRect().top, 0);
-    c.style.height = (window.innerHeight - top) + 'px';
+    const top = Math.max(c.getBoundingClientRect().top, 16);
+    c.style.height = (window.innerHeight - top - 26) + 'px';
   }
   function boot() {
     window.addEventListener('scroll', fitChat, { passive: true }); window.addEventListener('resize', fitChat);
@@ -298,7 +311,6 @@
     let l = 'en'; try { l = localStorage.getItem('lsco_ui_lang') || (s ? s.language : 'en'); } catch (e) {}
     setLang(l, true);
     $('#lang-toggle').onclick = () => setLang(uiLang === 'pt' ? 'en' : 'pt');
-    $('#search-form').onsubmit = e => { e.preventDefault(); location.hash = '#/search?q=' + encodeURIComponent($('#search-input').value); };
     $('#chat-toggle').onclick = () => $('#chat-panel').classList.toggle('open');
     $('#chat-close').onclick = () => $('#chat-panel').classList.remove('open');
     render();

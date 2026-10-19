@@ -17,7 +17,7 @@
     },
 
     stores: [
-      { id: '322', name: 'New York – Broadway', city: 'New York, NY', address: '1501 Broadway, New York, NY 10036', region: 'NYC', circuit: 'NYC-ISP-01', phone: '+1 212 555 0322', hours: 'Mon–Sat 10:00–21:00 · Sun 11:00–19:00', manager: 'Amanda Scarpin', lte: true, language: 'en', status: 'ok' },
+      { id: '322', name: 'New York – Broadway', city: 'New York, NY', address: '1155 Broadway, New York, NY 10001', region: 'NYC', circuit: 'NYC-ISP-01', phone: '+1 212 555 0322', hours: 'Mon–Sat 10:00–21:00 · Sun 11:00–19:00', manager: 'Amanda Scarpin', lte: true, language: 'en', status: 'ok' },
       { id: '318', name: 'New York – SoHo', city: 'New York, NY', address: '535 Broadway, New York, NY 10012', region: 'NYC', circuit: 'NYC-ISP-01', phone: '+1 212 555 0318', hours: 'Mon–Sat 10:00–20:00 · Sun 11:00–19:00', manager: 'Marcus Lee', lte: false, language: 'en', status: 'ok' },
       { id: '327', name: 'New York – Herald Square', city: 'New York, NY', address: '34 W 34th St, New York, NY 10001', region: 'NYC', circuit: 'NYC-ISP-01', phone: '+1 212 555 0327', hours: 'Mon–Sat 09:00–21:00 · Sun 10:00–20:00', manager: 'Priya Natarajan', lte: true, language: 'en', status: 'ok' },
       { id: '331', name: 'Brooklyn – Williamsburg', city: 'Brooklyn, NY', address: '110 N 6th St, Brooklyn, NY 11249', region: 'NYC', circuit: 'NYC-ISP-01', phone: '+1 718 555 0331', hours: 'Mon–Sun 11:00–20:00', manager: 'Dev Patel', lte: false, language: 'en', status: 'ok' },
@@ -48,15 +48,28 @@
     ],
 
     devices: [
-      { serial: 'DMPXLS322001', storeId: '322', model: 'iPad 10th gen 64GB', name: 'Till 2 iPad', location: 'Sales floor – Till 2', status: 'In use', warranty: 'AppleCare+ until 2027-03-31', replacements90d: 0 },
-      { serial: 'DMPXLS322002', storeId: '322', model: 'iPad 10th gen 64GB', name: 'Stockroom iPad', location: 'Stockroom', status: 'In use', warranty: 'AppleCare+ until 2027-03-31', replacements90d: 0 },
-      { serial: 'DMPXLS322003', storeId: '322', model: 'iPad Air 11" 128GB', name: 'Manager iPad', location: 'Manager office', status: 'In use', warranty: 'AppleCare+ until 2027-08-15', replacements90d: 0 },
+      { serial: 'DMPXR8L24K2', storeId: '322', model: 'iPad 10th gen 64GB', name: 'Till 2 iPad', location: 'Sales floor – Till 2', status: 'In use', warranty: 'AppleCare+ until 2027-03-31', replacements90d: 0 },
+      { serial: 'DMPXT5W17Q9', storeId: '322', model: 'iPad 10th gen 64GB', name: 'Stockroom iPad', location: 'Stockroom', status: 'In use', warranty: 'AppleCare+ until 2027-03-31', replacements90d: 0 },
+      { serial: 'H6TVQ3N81MZ', storeId: '322', model: 'iPad Air 11" 128GB', name: 'Manager iPad', location: 'Manager office', status: 'In use', warranty: 'AppleCare+ until 2027-08-15', replacements90d: 0 },
       { serial: 'DMPXLS415001', storeId: '415', model: 'iPad 10th gen 64GB', name: 'iPad Caixa 1', location: 'Loja – Caixa 1', status: 'In use', warranty: 'AppleCare+ until 2027-09-02', replacements90d: 1 },
       { serial: 'DMPXLS415002', storeId: '415', model: 'iPad 10th gen 64GB', name: 'iPad Armazém', location: 'Armazém', status: 'In use', warranty: 'AppleCare+ until 2027-01-20', replacements90d: 0 },
       { serial: 'GW-322-ARUBA', storeId: '322', model: 'Aruba 9004 Gateway', name: 'Store gateway', location: 'Comms cabinet', status: 'Up', warranty: 'Foundation Care', replacements90d: 0, network: true },
       { serial: 'AP-322-STK', storeId: '322', model: 'Aruba AP-535', name: 'Stockroom AP', location: 'Stockroom', status: 'Up', warranty: 'Foundation Care', replacements90d: 0, network: true },
       { serial: 'GW-415-ARUBA', storeId: '415', model: 'Aruba 9004 Gateway', name: 'Gateway da loja', location: 'Bastidor', status: 'Up', warranty: 'Foundation Care', replacements90d: 0, network: true }
     ],
+
+    // Operational support requests (non-IT: merchandising, payroll queries, supplies…) shown on the home counter
+    opsRequests: [
+      { number: 'OPS0004411', storeId: '322', short: 'Extra cleaning crew for Saturday sample sale', state: 'In Progress', team: 'Store Operations', opened: '2026-10-12' },
+      { number: 'OPS0004417', storeId: '322', short: 'Replenish shopping bags (large) — 2 cases', state: 'Awaiting Delivery', team: 'Store Supplies', opened: '2026-10-13' },
+      { number: 'OPS0004420', storeId: '322', short: 'Holiday staffing roster approval', state: 'Pending Approval', team: 'Regional Ops', opened: '2026-10-14' },
+      { number: 'OPS0004426', storeId: '322', short: 'Security tag gates recalibration visit', state: 'Scheduled', team: 'Loss Prevention', opened: '2026-10-14' },
+      { number: 'OPS0004431', storeId: '322', short: 'Window vinyl removal after Fall campaign', state: 'New', team: 'Visual Merchandising', opened: '2026-10-15' },
+      { number: 'OPS0004433', storeId: '322', short: 'Cash collection schedule change', state: 'In Progress', team: 'Finance Ops', opened: '2026-10-15' },
+      { number: 'OPS0004402', storeId: '415', short: 'Reposição de sacos (médios)', state: 'In Progress', team: 'Store Supplies', opened: '2026-10-10' },
+      { number: 'OPS0004429', storeId: '415', short: 'Aprovação do horário de Natal', state: 'Pending Approval', team: 'Regional Ops', opened: '2026-10-15' }
+    ],
+    questions: [],
 
     approvals: [
       { number: 'RITM0012099', storeId: '322', what: 'Seasonal signage reprint (HOL26) — over allocation by $120', waitingOn: 'Regional VM Manager – NYC', since: '2026-10-14' }
@@ -89,7 +102,7 @@
     outage: { active: false, region: 'NYC', parent: null }
   };
 
-  const KEY = 'lsco_demo_state_v1';
+  const KEY = 'lsco_demo_state_v2';
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function load() {
     try { const s = localStorage.getItem(KEY); if (s) return JSON.parse(s); } catch (e) {}

@@ -1,6 +1,19 @@
 /* UI strings. Portuguese is European Portuguese (pt-PT): ecrã, telemóvel, utilizador, registo. */
 window.I18N = {
   en: {
+    whatSupport: 'What support do you need?', openItemsStore: 'Open Items – Store',
+    techIssues: 'Open Tech Support Issues', opsReq: 'Open Ops Support Requests', questions: 'Questions', hwOrders: 'Open Hardware Orders', updatedLive: 'updated live',
+    hub: {
+      tech: ['Technical Support', 'Get technical issue help'],
+      ops: ['Operational Support', 'Request operations team services'],
+      hss: ['Health, Safety & Security Reporting', 'Report health, safety and security incidents'],
+      itauto: ['IT Automated Solutions', 'Self service automated solutions'],
+      fac: ['Facilities and Maintenance Support', 'Open service channel'],
+      dm: ['My District Manager User Support', 'Submit/manage DM tickets'],
+      fm: ['Fixtures and Mannequins', 'Order retail fixtures and mannequins']
+    },
+    opsTitle: 'Operational support requests', team: 'Team',
+    signedInVia: 'Signed in via Microsoft Entra ID · Store',
     brandSub: 'To Go · Store Support', home: 'Home',
     search: 'Search knowledge, tickets, orders…',
     signIn: 'Sign in', signOut: 'Sign out',
@@ -42,6 +55,19 @@ window.I18N = {
     hours: 'Hours', phone: 'Phone', manager: 'Manager', region: 'Region'
   },
   pt: {
+    whatSupport: 'De que apoio precisa?', openItemsStore: 'Itens em aberto – Loja',
+    techIssues: 'Problemas técnicos em aberto', opsReq: 'Pedidos operacionais em aberto', questions: 'Questões', hwOrders: 'Encomendas de equipamento', updatedLive: 'atualizado ao vivo',
+    hub: {
+      tech: ['Apoio Técnico', 'Ajuda com problemas técnicos'],
+      ops: ['Apoio Operacional', 'Pedir serviços à equipa de operações'],
+      hss: ['Saúde, Higiene e Segurança', 'Reportar incidentes de saúde e segurança'],
+      itauto: ['Soluções Automáticas de TI', 'Soluções self-service automatizadas'],
+      fac: ['Instalações e Manutenção', 'Canal de serviço'],
+      dm: ['Apoio do meu District Manager', 'Submeter/gerir pedidos ao DM'],
+      fm: ['Expositores e Manequins', 'Encomendar expositores e manequins']
+    },
+    opsTitle: 'Pedidos de apoio operacional', team: 'Equipa',
+    signedInVia: 'Sessão iniciada via Microsoft Entra ID · Loja',
     brandSub: 'To Go · Apoio às Lojas', home: 'Início',
     search: 'Pesquisar artigos, pedidos, encomendas…',
     signIn: 'Iniciar sessão', signOut: 'Terminar sessão',

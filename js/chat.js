@@ -102,12 +102,11 @@
       chips(T(['Store hours near me', 'Where is the SoHo store?'], ['Horário da loja do Chiado', 'Lojas em Nova Iorque']));
       return;
     }
-    const tickets = D.incidents.filter(i => i.storeId === s.store_id && !['Resolved', 'Closed'].includes(i.state));
-    const orders = D.orders.filter(o => o.storeId === s.store_id && o.active);
-    await say(T(`Hi ${esc(s.name.split(' ')[0])} 👋 You're signed in for Store #${s.store_id}. You have <b>${tickets.length}</b> open tickets and <b>${orders.length}</b> open orders.`,
-      `Olá ${esc(s.name.split(' ')[0])} 👋 Tem sessão iniciada na Loja #${s.store_id}. Tem <b>${tickets.length}</b> pedidos de suporte e <b>${orders.length}</b> encomendas em aberto.`), 400);
-    chips(T(['My iPad screen is broken', 'Tills and iPads are offline', 'Status of my ticket', 'Roller shutter is stuck'],
-      ['O ecrã do iPad partiu-se', 'Preciso de outro iPad', 'Estado do INC0010234', 'Quero falar com alguém']));
+    const open = D.incidents.filter(i => i.storeId === s.store_id && !['Resolved', 'Closed'].includes(i.state)).length
+      + (D.opsRequests || []).filter(o => o.storeId === s.store_id).length;
+    await say(T(`Hi ${esc(s.name.split(' ')[0])} 👋 I can fix tech issues, order equipment, or check any of your ${open} open requests. What do you need?`,
+      `Olá ${esc(s.name.split(' ')[0])} 👋 Posso resolver problemas técnicos, encomendar equipamento ou ver qualquer um dos seus ${open} pedidos em aberto. Do que precisa?`), 400);
+    chips(T(['Report an outage', 'Order equipment', 'Check a ticket'], ['Reportar uma falha', 'Encomendar equipamento', 'Ver um pedido']));
   }
 
   async function userSays(text) {
@@ -120,7 +119,7 @@
       return say(T('That code should be 6 digits — please try again.', 'O código deve ter 6 dígitos — tente novamente.'));
     }
     // pending device pick
-    if (M.ctx.pickDevice) { const dev = D.devices.find(d => text.includes(d.name)); if (dev) { M.ctx.pickDevice = false; return orderFor(dev); } }
+    if (M.ctx.pickDevice) { const dev = D.devices.find(d => d.storeId === (s && s.store_id) && /iPad/.test(d.model) && (text.includes(d.name) || d.location.includes(text))); if (dev) { M.ctx.pickDevice = false; return orderFor(dev); } }
 
     if (!s) { // guest: store locator only
       const store = D.stores.find(st => t.includes(st.name.split('–')[1]?.trim().toLowerCase() || '###') || t.includes(st.id));
@@ -133,11 +132,24 @@
         'Sem sessão iniciada só posso ajudar com moradas e horários. Use <b>Iniciar sessão</b> no canto superior direito para pedidos, encomendas e equipamentos.'));
     }
 
-    if (/ipad|tablet/.test(t) && /(broken|partiu|crack|replace|substitu|outro|another|second|segundo|need|preciso)/.test(t)) {
+    if (M.ctx.confirmOrder) {
+      const dev = M.ctx.confirmOrder; M.ctx.confirmOrder = null;
+      if (/^(y|yes|sim|ok|please|confirm)/.test(t)) return placeOrder(dev);
+      return say(T('No problem — nothing has been ordered.', 'Sem problema — não foi encomendado nada.'));
+    }
+    if (/^(order equipment|encomendar equipamento)$/.test(t)) {
+      await say(T('Sure — what do you need? For example a replacement iPad, a scanner or a receipt printer.', 'Claro — de que precisa? Por exemplo um iPad de substituição, um leitor ou uma impressora de talões.'));
+      return chips(T(['The screen on one of our iPads is smashed. I need a replacement.'], ['O ecrã de um dos nossos iPads partiu-se. Preciso de outro.']));
+    }
+    if (/^(report an outage|reportar uma falha)$/.test(t)) return userSays(T('Tills and iPads are offline', 'As caixas e os iPads estão sem ligação'));
+    if (/^(check a ticket|ver um pedido)$/.test(t)) return userSays(T('Status of my ticket', 'Estado do pedido'));
+    if (/ipad|tablet/.test(t) && /(broken|partiu|crack|smash|replace|substitu|outro|another|second|segundo|need|preciso)/.test(t)) {
       trace('device_ordering_agent → list_store_devices(store ' + s.store_id + ')');
       const ipads = D.devices.filter(d => d.storeId === s.store_id && /iPad/.test(d.model));
-      await say(T('Sorry to hear that. Which iPad is it?', 'Lamento. Qual é o iPad?'));
-      M.ctx.pickDevice = true; chips(ipads.map(d => d.name)); return;
+      const short = d => d.serial.slice(0, 4) + '…' + d.serial.slice(-3);
+      await say(T(`Sorry about that! I found ${ipads.length} iPads assigned to Store #${s.store_id}. Which one?`, `Lamento! Encontrei ${ipads.length} iPads atribuídos à Loja #${s.store_id}. Qual deles?`));
+      await say(`<div class="devlist">${ipads.map(d => `<div><b>${esc(d.model.replace(/ \d+GB$/, '').replace(/ 11"$/, ''))}</b> · SN ${esc(short(d))} · ${esc(d.location.replace('Sales floor – ', ''))}</div>`).join('')}</div>`, 300);
+      M.ctx.pickDevice = true; chips(ipads.map(d => d.location.replace('Sales floor – ', '').replace('Loja – ', ''))); return;
     }
     if (/offline|outage|down|sem rede|sem ligação|till|caixa/.test(t)) {
       await say(T(`For security I've sent a 6-digit code to your registered mobile ${esc(s.mobile_masked)}. Please type it here.`, `Por segurança, enviei um código de 6 dígitos para o seu telemóvel registado ${esc(s.mobile_masked)}. Escreva-o aqui.`));
@@ -174,11 +186,20 @@
         `Esta loja já substituiu um iPad nos últimos 90 dias, por isso não posso encomendar outro automaticamente. Vou passá-la para a equipa de Revisão de Segurança com tudo o que falámos — vão pedir uma fotografia do equipamento e da etiqueta com o número de série.`), 1100);
       return say(`<div class="card warn"><div class="card-k">${T('Escalated · Security Review EN · priority', 'Encaminhado · Revisão de Segurança · prioritário')}</div><div class="card-sub">${T('Live chat translation PT ↔ EN will be on.', 'A tradução do chat PT ↔ EN estará ativa.')}</div></div>`);
     }
-    await say(T(`${esc(dev.name)} (${esc(dev.serial)}) is under ${esc(dev.warranty)} and eligible: 0 of 1 replacements used in 90 days. Shipping to Store #${s.store_id}.`, `${esc(dev.name)} (${esc(dev.serial)}) está coberto e elegível. A enviar para a Loja #${s.store_id}.`), 1000);
+    const st = DemoData.get().stores.find(x => x.id === s.store_id) || {};
+    const street = (st.address || '').split(',')[0];
+    await say(T(`✅ Covered under warranty and within your store's replacement allowance. Ship to <b>Store #${s.store_id}, ${esc(street)}</b>?`,
+      `✅ Coberto pela garantia e dentro da quota de substituições da loja. Envio para a <b>Loja #${s.store_id}, ${esc(street)}</b>?`), 1000);
+    M.ctx.confirmOrder = dev; chips(T(['Yes please'], ['Sim, por favor']));
+  }
+
+  async function placeOrder(dev) {
+    const s = Session.get();
     trace('create_catalog_request → ServiceNow RITM · create_fulfillment_order');
     const o = DemoData.createIpadOrder(s.store_id, dev.serial, 'Broken screen', s.name);
     App.refresh(true);
-    return say(`<div class="card ok"><div class="card-k">✓ ${esc(o.number)} · ${T('Order placed', 'Encomenda criada')}</div><div>${T('Replacement iPad', 'iPad de substituição')} · ${T('ETA', 'Previsão')} ${esc(o.eta)}</div><div class="card-sub">${T('Prepaid return label sent to your email.', 'Etiqueta de devolução enviada para o seu email.')}</div><a href="#/orders/${o.number}">${T('View order', 'Ver encomenda')} →</a></div>`, 900);
+    const etaDay = new Date(o.eta + 'T12:00:00').toLocaleDateString(lang() === 'pt' ? 'pt-PT' : 'en-GB', { weekday: 'short' });
+    return say(`<div class="card ok"><div class="card-k">📦 ${T('Order placed', 'Encomenda criada')} – ${esc(o.number)}</div><div>${T('Pre-enrolled replacement iPad', 'iPad de substituição pré-configurado')} · ${T('ETA', 'Previsão')} ${esc(etaDay)}</div><div class="card-sub">${T('Return label for SN', 'Etiqueta de devolução para o SN')} …${esc(dev.serial.slice(-3))} ${T('sent to your email', 'enviada para o seu email')}</div><a href="#/orders/${o.number}">${T('View order', 'Ver encomenda')} →</a></div>`, 900);
   }
 
   async function outageFlow() {
@@ -255,7 +276,7 @@
     async restart() {
       const s = Session.get();
       const header = document.getElementById('chat-status');
-      if (header) header.textContent = s ? `${I18N[lang()].chatVerified} · ${s.name} · #${s.store_id}` : I18N[lang()].chatGuest;
+      if (header) header.textContent = s ? `✔ ${I18N[lang()].signedInVia} #${s.store_id}` : I18N[lang()].chatGuest;
       document.getElementById('chat-panel').classList.toggle('verified', !!s);
       const panel = document.getElementById('chat-panel');
       if (CFG.chatMode === 'demokit' && panel.dataset.mode !== 'mock-forced') { panel.dataset.mode = 'demokit'; mountDemoKit(); return; }

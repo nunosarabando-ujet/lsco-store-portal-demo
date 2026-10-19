@@ -6,24 +6,22 @@
   <meta name="robots" content="noindex, nofollow">
   <title>LS&amp;Co. To Go · Store Support (demo)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="#/home" aria-label="LS&amp;Co. To Go home">
-      <span class="logo-mark">LS&amp;Co.</span>
-      <span class="brand-sub" id="brand-sub">To Go · Store Support</span>
+  <div class="bg" aria-hidden="true"></div>
+
+  <header class="head">
+    <a class="logo" href="#/home" aria-label="LS&amp;Co. To Go home">
+      <span class="logo-ls">LS<br>&amp;CO.</span><span class="togo">TO GO »</span>
     </a>
-    <form class="search" id="search-form" role="search">
-      <span aria-hidden="true">⌕</span><input id="search-input" type="search" aria-label="Search">
-    </form>
-    <div class="top-actions">
-      <button class="btn ghost sm lang" id="lang-toggle" aria-label="Switch language">PT</button>
-      <div id="user-area" class="user-area"></div>
+    <div class="head-icons" id="head-icons">
+      <a class="circle" href="#/home" title="Home" aria-label="Home">⌂</a>
+      <button class="circle" id="lang-toggle" title="Language" aria-label="Switch language">PT</button>
+      <span id="user-area"></span>
     </div>
   </header>
-  <nav class="subnav" id="subnav" hidden></nav>
   <div class="outage" id="outage-banner" role="alert" hidden></div>
 
   <div class="layout">
@@ -31,17 +29,20 @@
 
     <aside class="chat-panel" id="chat-panel" aria-label="Stitch virtual agent">
       <div class="chat-head">
-        <div class="chat-id"><span class="bot-av">S</span><div><b>Stitch</b><small id="chat-status">Guest</small></div></div>
+        <div>
+          <b class="chat-title">Stitch · LS&amp;Co. Store Support</b>
+          <small class="chat-sub">AI assistant · Powered by UJET + Google CX Agent Studio</small>
+          <span class="chat-badge" id="chat-status">Guest</span>
+        </div>
         <button class="icon-btn" id="chat-close" aria-label="Close chat">✕</button>
       </div>
       <div class="chat-mount" id="chat-mount"></div>
-      <div class="chat-foot">Powered by UJET · Google Gemini Enterprise for CX</div>
     </aside>
   </div>
 
   <button class="chat-fab" id="chat-toggle" aria-label="Open chat">💬</button>
 
-  <footer class="footer"><span id="footer-text"></span><span class="muted">Shift + P · presenter panel</span></footer>
+  <footer class="footer"><span id="footer-text"></span><span>Shift + P · presenter panel</span></footer>
 
   <div class="presenter" id="presenter" hidden>
     <div class="presenter-head"><b>Presenter panel</b><button data-p="close" aria-label="Close">✕</button></div>
