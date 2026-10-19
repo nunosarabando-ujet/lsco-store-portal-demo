@@ -1,0 +1,36 @@
+[
+  {
+    "id": "KB0001", "category": "POS", "title": "POS till frozen – soft and hard reboot",
+    "body": "## When to use\nThe till screen does not respond to touch or the scanner.\n\n## Steps\n1. Park the open basket and ask the customer to wait.\n2. Hold the **power button** for 5 seconds until the screen goes dark.\n3. Wait 30 seconds, power on and sign in with your POS PIN.\n4. Still frozen? Unplug the till for **60 seconds** (hard reboot).\n\n## Still not fixed\nAsk **Stitch** – it can check the till heartbeat and open a ticket with the steps you already tried.",
+    "pt": { "title": "Caixa POS bloqueada – reinício simples e completo",
+      "body": "## Quando usar\nO ecrã da caixa não responde ao toque nem ao leitor.\n\n## Passos\n1. Suspenda a venda em curso e peça ao cliente para aguardar.\n2. Mantenha o **botão de energia** premido 5 segundos até o ecrã apagar.\n3. Aguarde 30 segundos, ligue e inicie sessão com o seu PIN.\n4. Continua bloqueada? Desligue a caixa da corrente durante **60 segundos**.\n\n## Ainda sem solução\nPergunte ao **Stitch** – verifica o estado da caixa e abre um pedido com os passos já feitos." }
+  },
+  {
+    "id": "KB0002", "category": "Payments", "title": "Card reader error E-204 \"host not reachable\"",
+    "body": "## What it means\n`E-204` – the reader cannot reach the payment host.\n\n## Steps\n1. Check the outage banner at the top of the portal. If your store is affected, switch the router to **LTE**.\n2. On the reader: Settings → Payments → **Re-pair**.\n3. Run a 0.01 test transaction and void it.",
+    "pt": { "title": "Erro E-204 no terminal de pagamento \"host não acessível\"",
+      "body": "## O que significa\n`E-204` – o terminal não consegue contactar o servidor de pagamentos.\n\n## Passos\n1. Veja o aviso de falha no topo do portal. Se a sua loja estiver afetada, mude o router para **LTE**.\n2. No terminal: Definições → Pagamentos → **Emparelhar**.\n3. Faça uma transação de teste de 0,01 e anule-a." }
+  },
+  {
+    "id": "KB0003", "category": "Network", "title": "Stockroom Wi-Fi access point – power-cycle",
+    "body": "## Steps\n1. Find the AP on the stockroom ceiling (white disc, label **AP-STOCK**).\n2. In the comms cabinet, unplug the cable on switch port **24** for 10 seconds, then plug it back in.\n3. Wait 3 minutes for the light to turn **green**.\n4. Tell Stitch or reply on your ticket that it was power-cycled."
+  },
+  {
+    "id": "KB0004", "category": "Hardware", "title": "iPad replacement policy",
+    "body": "## Policy\n- **1 replacement per store per 90 days** is approved automatically.\n- Further requests go to **Security Review** with a photo of the device and its serial label.\n- Replacements arrive **pre-enrolled**; return the damaged iPad with the prepaid label within 14 days.",
+    "pt": { "title": "Política de substituição de iPads",
+      "body": "## Política\n- **1 substituição por loja a cada 90 dias** é aprovada automaticamente.\n- Pedidos adicionais seguem para **Security Review** com foto do equipamento e da etiqueta do n.º de série.\n- Os iPads chegam **pré-configurados**; devolva o equipamento danificado com a etiqueta pré-paga em 14 dias." }
+  },
+  {
+    "id": "KB0005", "category": "Login", "title": "Password reset and account unlock",
+    "body": "## Locked out?\nAfter 5 failed attempts your account locks for 30 minutes.\n\n## Fastest fix\n1. Ask **Stitch** to unlock your account.\n2. Stitch sends a **6-digit code** by SMS to your registered mobile.\n3. Enter the code – your account is unlocked, or you get a reset link.\n\nNever share your password or one-time code."
+  },
+  {
+    "id": "KB0006", "category": "Network", "title": "Network outages – how we communicate",
+    "body": "## During an outage\n- A **red banner** appears on every portal page for affected stores.\n- Calls to Store IT hear a known-outage message and are linked to the major incident automatically.\n- Updates every **15 minutes** by SMS to store managers.\n\n## Keep trading\nSwitch the router to **LTE** if your store has LTE backup. Card payments continue; gift cards are offline."
+  },
+  {
+    "id": "KB0007", "category": "Facilities", "title": "Not IT? Facilities, HR and visual merchandising",
+    "body": "## Who handles what\n- Roller shutters, lighting, HVAC, fitting rooms: **Facilities**.\n- Rota and pay: **Workday** self-service.\n- Windows, fixtures and mannequins: **Visual Merchandising**.\n\nStitch routes these automatically so they never wait in the IT queue."
+  }
+]

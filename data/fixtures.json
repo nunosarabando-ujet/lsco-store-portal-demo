@@ -1,0 +1,6 @@
+[
+  { "sku": "FX-HOL-WIN-A", "name": "Holiday window kit A – \"Red Tab\" (2 mannequins, plinths, vinyl)", "fits": "Windows ≥ 2.4 m", "cost": 1850, "lead": "7 days" },
+  { "sku": "FX-HOL-WIN-B", "name": "Holiday window kit B – \"Denim Gift\" (1 mannequin, gift stack, vinyl)", "fits": "Windows ≥ 1.6 m", "cost": 1120, "lead": "5 days" },
+  { "sku": "MQ-ARM-L-F", "name": "Mannequin arm – left, female (replacement part)", "fits": "Series 3 mannequins", "cost": 0, "lead": "3 days" },
+  { "sku": "FX-TBL-NEST", "name": "Nesting table set (3)", "fits": "Floor", "cost": 640, "lead": "10 days" }
+]

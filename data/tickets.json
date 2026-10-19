@@ -1,0 +1,104 @@
+[
+  {
+    "number": "INC0010301", "storeId": "322", "type": "tech", "category": "Network",
+    "shortDescription": "MAJOR INCIDENT – Regional network outage, NYC-ISP-01 circuit (5 stores)",
+    "description": "ISP circuit NYC-ISP-01 down. Stores #322, #318, #327, #331, #340 affected. Raised by Stitch after regional health check.",
+    "state": "In Progress", "holdReason": null, "priority": "1 - Critical", "assignmentGroup": "Network Operations",
+    "ci": "NYC-ISP-01", "caller": "Stitch (virtual agent)", "openedAt": "-0d 09:12", "updatedAt": "-0d 09:20",
+    "parent": null, "majorIncident": true, "region": "NYC",
+    "timeline": [
+      { "at": "-0d 09:12", "author": "Stitch (virtual agent)", "kind": "work_note", "text": "Major incident raised: 5 NYC stores DOWN on circuit NYC-ISP-01. Child incidents linked." },
+      { "at": "-0d 09:20", "author": "Network Operations", "kind": "comment", "text": "ISP confirmed a fibre cut. Engineer dispatched, ETA 14:30. Stores with LTE backup: switch the router to LTE mode." }
+    ]
+  },
+  {
+    "number": "INC0010302", "storeId": "322", "type": "tech", "category": "Network",
+    "shortDescription": "Tills and iPads offline – gateway uplink down",
+    "description": "Store reports all tills and iPads offline. Remote gateway port bounce attempted, still DOWN.",
+    "state": "In Progress", "holdReason": null, "priority": "2 - High", "assignmentGroup": "Network Operations",
+    "ci": "GW-322", "caller": "Amanda Scarpin", "openedAt": "-0d 09:10", "updatedAt": "-0d 09:12", "parent": "INC0010301",
+    "timeline": [
+      { "at": "-0d 09:11", "author": "Stitch (virtual agent)", "kind": "work_note", "text": "get_site_health: gateway uplink DOWN, APs healthy. bounce_gateway_port: still DOWN." },
+      { "at": "-0d 09:12", "author": "Stitch (virtual agent)", "kind": "comment", "text": "Linked to major incident INC0010301. We'll text you updates every 15 minutes." }
+    ]
+  },
+  {
+    "number": "INC0010303", "storeId": "318", "type": "tech", "category": "Network",
+    "shortDescription": "Store offline – gateway uplink down",
+    "description": "Detected by regional health check.", "state": "In Progress", "holdReason": null, "priority": "2 - High",
+    "assignmentGroup": "Network Operations", "ci": "GW-318", "caller": "Stitch (virtual agent)",
+    "openedAt": "-0d 09:12", "updatedAt": "-0d 09:12", "parent": "INC0010301",
+    "timeline": [ { "at": "-0d 09:12", "author": "Stitch (virtual agent)", "kind": "work_note", "text": "Auto-created from regional outage. Store manager notified by SMS." } ]
+  },
+  {
+    "number": "INC0010288", "storeId": "322", "type": "tech", "category": "Network",
+    "shortDescription": "Stockroom Wi-Fi access point offline",
+    "description": "Stockroom AP not broadcasting. Remote reboot failed; awaiting on-site power-cycle confirmation.",
+    "state": "On Hold", "holdReason": "Awaiting Caller", "priority": "3 - Moderate", "assignmentGroup": "Store IT Service Desk",
+    "ci": "AP-322-STOCK", "caller": "Amanda Scarpin", "openedAt": "-4d 15:40", "updatedAt": "-2d 11:05", "parent": null,
+    "timeline": [
+      { "at": "-4d 15:41", "author": "Stitch (virtual agent)", "kind": "work_note", "text": "reboot_ap AP-322-STOCK: no response." },
+      { "at": "-2d 11:05", "author": "Store IT Service Desk", "kind": "comment", "text": "Need store manager confirmation that the stockroom AP was power-cycled." }
+    ]
+  },
+  {
+    "number": "INC0010276", "storeId": "322", "type": "tech", "category": "POS",
+    "shortDescription": "Till 2 freezes after card payment",
+    "description": "Till 2 freezes intermittently after contactless payments.",
+    "state": "New", "holdReason": null, "priority": "3 - Moderate", "assignmentGroup": "Store IT Service Desk",
+    "ci": "POS-322-T2", "caller": "Amanda Scarpin", "openedAt": "-1d 16:20", "updatedAt": "-1d 16:20", "parent": null,
+    "timeline": [ { "at": "-1d 16:20", "author": "Amanda Scarpin", "kind": "comment", "text": "Happened 3 times this afternoon. Soft reboot fixes it for an hour." } ]
+  },
+  {
+    "number": "INC0010219", "storeId": "322", "type": "tech", "category": "Payments",
+    "shortDescription": "Card reader error E-204 host not reachable – Till 1",
+    "description": "Card reader shows E-204.", "state": "Resolved", "holdReason": null, "priority": "3 - Moderate",
+    "assignmentGroup": "Store IT Service Desk", "ci": "POS-322-T1", "caller": "Amanda Scarpin",
+    "openedAt": "-8d 12:15", "updatedAt": "-8d 12:31", "parent": null,
+    "timeline": [ { "at": "-8d 12:31", "author": "Stitch (virtual agent)", "kind": "comment", "text": "Resolved in chat: payment route re-applied and reader re-paired. Test transaction OK." } ]
+  },
+  {
+    "number": "INC0010280", "storeId": "322", "type": "ops", "category": "Store Operations",
+    "shortDescription": "Extra cover needed for Saturday sample sale",
+    "description": "Request 2 additional associates from the district pool.", "state": "In Progress", "holdReason": null,
+    "priority": "4 - Low", "assignmentGroup": "Store Operations", "ci": "", "caller": "Amanda Scarpin",
+    "openedAt": "-3d 10:00", "updatedAt": "-1d 09:30", "parent": null,
+    "timeline": [ { "at": "-1d 09:30", "author": "Store Operations", "kind": "comment", "text": "One associate confirmed from #327. Looking for a second." } ]
+  },
+  {
+    "number": "INC0010281", "storeId": "322", "type": "ops", "category": "Visual Merchandising",
+    "shortDescription": "Front window vinyl damaged",
+    "description": "Holiday vinyl peeling on the left window.", "state": "New", "holdReason": null,
+    "priority": "4 - Low", "assignmentGroup": "Visual Merchandising", "ci": "", "caller": "Amanda Scarpin",
+    "openedAt": "-2d 14:10", "updatedAt": "-2d 14:10", "parent": null, "timeline": []
+  },
+  {
+    "number": "INC0010282", "storeId": "322", "type": "question", "category": "Inquiry",
+    "shortDescription": "How do we order more receipt paper?",
+    "description": "", "state": "New", "holdReason": null, "priority": "5 - Planning", "assignmentGroup": "Store IT Service Desk",
+    "ci": "", "caller": "Amanda Scarpin", "openedAt": "-0d 08:40", "updatedAt": "-0d 08:40", "parent": null, "timeline": []
+  },
+  {
+    "number": "INC0010234", "storeId": "415", "type": "tech", "category": "POS",
+    "shortDescription": "EPOS receipt printer not printing",
+    "description": "Impressora de talões da caixa 1 não imprime. Paper loaded, error light on.",
+    "state": "In Progress", "holdReason": null, "priority": "3 - Moderate", "assignmentGroup": "Store IT Service Desk",
+    "ci": "PRN-415-EPOS", "caller": "Joana Ferreira", "openedAt": "-3d 10:02", "updatedAt": "-1d 16:30", "parent": null,
+    "timeline": [
+      { "at": "-3d 10:05", "author": "Store IT Service Desk", "kind": "comment", "text": "Printer firmware reset done remotely; fault persists. Replacement approved." },
+      { "at": "-1d 16:30", "author": "Store IT Service Desk", "kind": "comment", "text": "Replacement printer dispatched from the Lisbon depot. Courier ETA in 2 days." }
+    ]
+  },
+  {
+    "number": "INC0010240", "storeId": "415", "type": "ops", "category": "Store Operations",
+    "shortDescription": "Pedido de cacifos adicionais para a equipa",
+    "description": "", "state": "In Progress", "holdReason": null, "priority": "4 - Low", "assignmentGroup": "Store Operations",
+    "ci": "", "caller": "Joana Ferreira", "openedAt": "-6d 11:00", "updatedAt": "-2d 10:00", "parent": null, "timeline": []
+  },
+  {
+    "number": "INC0010241", "storeId": "415", "type": "question", "category": "Inquiry",
+    "shortDescription": "Como altero o horário de abertura no feriado?",
+    "description": "", "state": "New", "holdReason": null, "priority": "5 - Planning", "assignmentGroup": "Store Operations",
+    "ci": "", "caller": "Joana Ferreira", "openedAt": "-1d 09:15", "updatedAt": "-1d 09:15", "parent": null, "timeline": []
+  }
+]

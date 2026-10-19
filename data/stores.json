@@ -1,0 +1,20 @@
+[
+  { "id": "322", "name": "New York – Broadway", "city": "New York", "country": "US", "region": "NYC", "circuit": "NYC-ISP-01",
+    "address": "1155 Broadway, New York, NY 10001", "phone": "+1 212 555 0322", "hours": "Mon–Sat 10:00–21:00 · Sun 11:00–19:00",
+    "manager": "Amanda Scarpin", "language": "en", "lteBackup": true },
+  { "id": "318", "name": "New York – SoHo", "city": "New York", "country": "US", "region": "NYC", "circuit": "NYC-ISP-01",
+    "address": "535 Broadway, New York, NY 10012", "phone": "+1 212 555 0318", "hours": "Mon–Sun 10:00–20:00",
+    "manager": "Derek Hale", "language": "en", "lteBackup": true },
+  { "id": "327", "name": "New York – Herald Square", "city": "New York", "country": "US", "region": "NYC", "circuit": "NYC-ISP-01",
+    "address": "1 Herald Sq, New York, NY 10001", "phone": "+1 212 555 0327", "hours": "Mon–Sun 09:00–21:00",
+    "manager": "Priya Nair", "language": "en", "lteBackup": false },
+  { "id": "331", "name": "Brooklyn – Atlantic Terminal", "city": "Brooklyn", "country": "US", "region": "NYC", "circuit": "NYC-ISP-01",
+    "address": "139 Flatbush Ave, Brooklyn, NY 11217", "phone": "+1 718 555 0331", "hours": "Mon–Sat 10:00–21:00",
+    "manager": "Marcus Lee", "language": "en", "lteBackup": true },
+  { "id": "340", "name": "Queens – Center", "city": "Queens", "country": "US", "region": "NYC", "circuit": "NYC-ISP-01",
+    "address": "90-15 Queens Blvd, Queens, NY 11373", "phone": "+1 718 555 0340", "hours": "Mon–Sun 10:00–21:00",
+    "manager": "Sofia Ramos", "language": "en", "lteBackup": false },
+  { "id": "415", "name": "Lisboa – Chiado", "city": "Lisboa", "country": "PT", "region": "EU-PT", "circuit": "PT-ISP-01",
+    "address": "Rua Garrett 50, 1200-204 Lisboa", "phone": "+351 21 555 0415", "hours": "Seg–Dom 10:00–22:00",
+    "manager": "Joana Ferreira", "language": "pt", "lteBackup": true }
+]

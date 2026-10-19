@@ -1,0 +1,24 @@
+[
+  {
+    "id": "amanda",
+    "name": "Amanda Scarpin",
+    "firstName": "Amanda",
+    "role": "Store Manager",
+    "storeId": "322",
+    "language": "en",
+    "employeeId": "E322001",
+    "email": "amanda.scarpin@example.com",
+    "mobileMasked": "***-***-1234"
+  },
+  {
+    "id": "joana",
+    "name": "Joana Ferreira",
+    "firstName": "Joana",
+    "role": "Store Lead",
+    "storeId": "415",
+    "language": "pt",
+    "employeeId": "E415001",
+    "email": "joana.ferreira@example.com",
+    "mobileMasked": "+351 *** *** 678"
+  }
+]

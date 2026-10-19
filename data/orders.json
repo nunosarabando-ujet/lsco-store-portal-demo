@@ -1,0 +1,16 @@
+[
+  {
+    "number": "RITM0010077", "storeId": "415", "item": "Replacement iPad", "serial": "DMPX4151A", "stage": "Delivered",
+    "eta": "Delivered", "openedAt": "-42d 10:00", "shipTo": "Store #415, Rua Garrett 50, 1200-204 Lisboa",
+    "tracking": "PT-CTT-88412093", "reason": "Broken screen",
+    "history": [ { "at": "-42d 10:00", "stage": "Requested" }, { "at": "-42d 10:00", "stage": "Approved" },
+                 { "at": "-41d 09:00", "stage": "Fulfillment" }, { "at": "-40d 17:00", "stage": "Shipped" },
+                 { "at": "-38d 11:30", "stage": "Delivered" } ]
+  },
+  {
+    "number": "RITM0010091", "storeId": "322", "item": "Handheld barcode scanner", "serial": "", "stage": "Fulfillment",
+    "eta": "+2d", "openedAt": "-3d 14:00", "shipTo": "Store #322, 1155 Broadway, New York, NY 10001",
+    "tracking": "", "reason": "Additional device",
+    "history": [ { "at": "-3d 14:00", "stage": "Requested" }, { "at": "-3d 14:05", "stage": "Approved" }, { "at": "-2d 09:00", "stage": "Fulfillment" } ]
+  }
+]

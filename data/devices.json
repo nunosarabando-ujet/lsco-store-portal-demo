@@ -1,0 +1,20 @@
+[
+  { "serial": "DMPX3221A", "storeId": "322", "name": "iPad 10th Gen – Till 2", "type": "ipad", "model": "iPad 10th Gen 64GB", "status": "UP", "location": "Till 2", "warrantyEnd": "2027-08-31" },
+  { "serial": "DMPX3222B", "storeId": "322", "name": "iPad 10th Gen – Stockroom", "type": "ipad", "model": "iPad 10th Gen 64GB", "status": "UP", "location": "Stockroom", "warrantyEnd": "2027-08-31" },
+  { "serial": "DMPX3223C", "storeId": "322", "name": "iPad Air – Manager office", "type": "ipad", "model": "iPad Air 64GB", "status": "UP", "location": "Manager office", "warrantyEnd": "2027-02-28" },
+  { "serial": "POS-322-T1", "storeId": "322", "name": "POS Till 1", "type": "pos", "model": "EPOS T-Series", "status": "UP", "location": "Cash desk", "warrantyEnd": "2027-05-31" },
+  { "serial": "POS-322-T2", "storeId": "322", "name": "POS Till 2", "type": "pos", "model": "EPOS T-Series", "status": "DEGRADED", "location": "Cash desk", "warrantyEnd": "2027-05-31" },
+  { "serial": "GW-322", "storeId": "322", "name": "Gateway", "type": "gateway", "model": "Aruba 9004", "status": "UP", "location": "Comms cabinet", "warrantyEnd": "2028-01-31" },
+  { "serial": "SW-322", "storeId": "322", "name": "Switch", "type": "switch", "model": "Aruba 6100 24G", "status": "UP", "location": "Comms cabinet", "warrantyEnd": "2028-01-31" },
+  { "serial": "AP-322-SALES", "storeId": "322", "name": "AP – Sales floor", "type": "ap", "model": "Aruba AP-515", "status": "UP", "location": "Sales floor", "warrantyEnd": "2028-01-31" },
+  { "serial": "AP-322-STOCK", "storeId": "322", "name": "AP – Stockroom", "type": "ap", "model": "Aruba AP-515", "status": "DOWN", "location": "Stockroom", "warrantyEnd": "2028-01-31" },
+  { "serial": "AP-322-FIT", "storeId": "322", "name": "AP – Fitting rooms", "type": "ap", "model": "Aruba AP-505", "status": "UP", "location": "Fitting rooms", "warrantyEnd": "2028-01-31" },
+  { "serial": "DMPX4151A", "storeId": "415", "name": "iPad 10th Gen – Caixa 1", "type": "ipad", "model": "iPad 10th Gen 64GB", "status": "UP", "location": "Caixa 1", "warrantyEnd": "2027-09-30" },
+  { "serial": "DMPX4152B", "storeId": "415", "name": "iPad 10th Gen – Armazém", "type": "ipad", "model": "iPad 10th Gen 64GB", "status": "UP", "location": "Armazém", "warrantyEnd": "2027-09-30" },
+  { "serial": "PRN-415-EPOS", "storeId": "415", "name": "EPOS receipt printer", "type": "pos", "model": "Epson TM-m30III", "status": "DEGRADED", "location": "Caixa 1", "warrantyEnd": "2027-03-31" },
+  { "serial": "GW-415", "storeId": "415", "name": "Gateway", "type": "gateway", "model": "Aruba 9004", "status": "UP", "location": "Bastidor", "warrantyEnd": "2028-03-31" },
+  { "serial": "SW-415", "storeId": "415", "name": "Switch", "type": "switch", "model": "Aruba 6100 12G", "status": "UP", "location": "Bastidor", "warrantyEnd": "2028-03-31" },
+  { "serial": "AP-415-LOJA", "storeId": "415", "name": "AP – Loja", "type": "ap", "model": "Aruba AP-505", "status": "UP", "location": "Loja", "warrantyEnd": "2028-03-31" },
+  { "serial": "AP-415-ARM", "storeId": "415", "name": "AP – Armazém", "type": "ap", "model": "Aruba AP-505", "status": "UP", "location": "Armazém", "warrantyEnd": "2028-03-31" },
+  { "serial": "GW-318", "storeId": "318", "name": "Gateway", "type": "gateway", "model": "Aruba 9004", "status": "UP", "location": "Comms cabinet", "warrantyEnd": "2028-01-31" }
+]
