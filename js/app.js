@@ -107,7 +107,9 @@ async function banner() {
 
 /* ---------------- auth ---------------- */
 async function signIn(personaId) {
-  outlet.querySelectorAll(".persona").forEach(b => (b.disabled = true)); // instant sign-in, no spinner
+  const sp = document.getElementById("signing");
+  if (sp) { sp.hidden = false; outlet.querySelectorAll(".persona").forEach(b => (b.disabled = true)); }
+  await new Promise(r => setTimeout(r, 1000));
   let res;
   try { res = await data.signIn(personaId); }
   catch (e) {
@@ -125,10 +127,9 @@ async function signIn(personaId) {
 }
 async function signOut() {
   state.setSession(null);          // triggers syncAuth (signed out)
-  await syncAuth("sign out");      // make sure it is saved
-  if (CONFIG.CHAT.restartOn === "never") { go("#/login"); return; }  // keep the chat open
+  await syncAuth("sign out");      // make sure it is saved before the reload
   location.hash = "#/login";
-  location.reload();               // fresh page = fresh guest chat
+  location.reload();
 }
 const ctx = { signIn };
 
@@ -154,18 +155,6 @@ function openChat() {
   toast("Open the Stitch chat with the button in the bottom-right corner");
 }
 
-// Which user the open chat was started for (null = guest). Decides whether a sign-in/switch restarts it:
-//   "every_change" restart on any sign-in, sign-out or user switch
-//   "auth_change"  restart only between guest and signed in; Amanda <-> Joana keeps the conversation
-//   "never"        always keep the conversation (the VA must read the user from the sheet)
-let chatUser = state.persona?.id || null;
-function shouldRestartChat(prev, next) {
-  const mode = CONFIG.CHAT.restartOn || "auth_change";
-  if (mode === "never") return false;
-  if (mode === "auth_change") return !!prev !== !!next;
-  return prev !== next;
-}
-
 window.addEventListener("hashchange", () => render());
 window.addEventListener("lsco:data-changed", () => { render({ soft: true }); banner(); });
 state.onChange(async type => {
@@ -173,9 +162,7 @@ state.onChange(async type => {
     banner();
     // 1) save the new auth state to the sheet, 2) restart the chat, which reads that same row
     await syncAuth(state.persona ? "signed in " + state.persona.employeeId : "signed out");
-    const now = state.persona?.id || null;
-    if (shouldRestartChat(chatUser, now)) { chatUser = now; startChat("sign-in"); }
-    else console.log("[LSCO chat] keeping the current conversation (CHAT.restartOn = " + CONFIG.CHAT.restartOn + "); the VA reads the new user from the sheet");
+    if (state.persona) startChat("sign-in");   // sign-out reloads the page, which starts a guest chat
   }
   if (type === "datasource") { render(); banner(); }
 });
@@ -230,7 +217,7 @@ $("presenter").addEventListener("click", async e => {
     // Changes show on the next poll; banner refreshes now
     banner();
   } else if (a === "rechat") {
-    await syncAuth("manual"); chatUser = state.persona?.id || null; await startChat("manual"); toast("Chat: " + chatLabel());
+    await syncAuth("manual"); await startChat("manual"); toast("Chat: " + chatLabel());
   } else if (a === "resync") {
     await syncAuth("manual"); const st = authSyncStatus(); toast(st.ok ? "Auth state saved to the sheet" : "Sheet: " + (st.error || "not saved"), st.ok ? "" : "warn");
   }

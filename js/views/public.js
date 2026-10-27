@@ -46,6 +46,7 @@ export async function login() {
           <span class="pav">${esc(p.name.split(" ").map(w => w[0]).join(""))}</span>
           <span><b>${esc(p.name)}</b><small>${esc(p.email)}</small><small>${esc(p.role)} · Store #${p.storeId} · ${p.language.toUpperCase()}</small></span>
         </button>`).join("")}</div>
+      <div class="signing" id="signing" hidden><span class="spin" aria-hidden="true"></span>${t("signingIn")}</div>
       <p class="tiny muted">Demo only. No credentials are collected.</p>
     </div></div>`,
     bind(root, ctx) {
