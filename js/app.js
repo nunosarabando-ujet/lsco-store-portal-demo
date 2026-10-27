@@ -87,7 +87,7 @@ function shell() {
     <a class="btn small primary" href="#/login">${t("signIn")}</a>`;
   $("signOut")?.addEventListener("click", signOut);
   $("footer").innerHTML = `<span class="dsbadge">${t("data")}: ${sourceLabel()}</span> · ${t("lastRefresh")} ${lastRefresh ? lastRefresh.toLocaleTimeString() : "—"}
-    · Auth sheet ${esc(sheetLabel(false))} · Chat ${esc(chatStatus().state)}
+    · Auth sheet ${esc(sheetLabel(false))} · Chat ${esc(chatStatus().state === "error" ? "error: " + chatStatus().detail : chatStatus().state)}
     <span class="sp"></span><span class="muted">Demo environment · not a Levi Strauss &amp; Co. system</span>`;
 }
 

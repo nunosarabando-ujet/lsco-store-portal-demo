@@ -22,13 +22,18 @@ function sessionId() {
 }
 
 async function fetchWidget() {
-  const u = new URL(C().url);
-  u.searchParams.set("action", "widget");
-  u.searchParams.set("key", C().key);
-  u.searchParams.set("sid", sessionId());
-  u.searchParams.set("token", C().token);
-  const r = await fetch(u);
-  const j = await r.json();
+  // POST with text/plain, exactly like the auth-sheet write (no CORS preflight)
+  let r;
+  try {
+    r = await fetch(C().url, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "widget", token: C().token, key: C().key, sid: sessionId() }) });
+  } catch (e) {
+    throw new Error("Apps Script not reachable (" + e.message + "). Check the deployment is the latest version with access 'Anyone'");
+  }
+  const text = await r.text();
+  let j;
+  try { j = JSON.parse(text); }
+  catch { throw new Error("Apps Script returned a page, not JSON (redeploy as a New version?): " + text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 120)); }
   if (!j.ok) throw new Error(j.error || "widget config failed");
   return j;
 }
