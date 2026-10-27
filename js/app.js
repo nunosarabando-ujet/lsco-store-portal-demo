@@ -6,6 +6,7 @@ import { route, current, go } from "./router.js";
 import { data, sourceLabel } from "./data/index.js";
 import { toast, esc } from "./components/ui.js";
 import { syncAuth, authSyncStatus, onAuthSync } from "./authsheet.js";
+import { startChat, openChat as openUjet, chatStatus, onChatStatus } from "./websdk.js";
 import * as P from "./views/public.js";
 import { home } from "./views/home.js";
 import { support } from "./views/support.js";
@@ -86,7 +87,7 @@ function shell() {
     <a class="btn small primary" href="#/login">${t("signIn")}</a>`;
   $("signOut")?.addEventListener("click", signOut);
   $("footer").innerHTML = `<span class="dsbadge">${t("data")}: ${sourceLabel()}</span> · ${t("lastRefresh")} ${lastRefresh ? lastRefresh.toLocaleTimeString() : "—"}
-    · Auth sheet ${esc(sheetLabel(false))}
+    · Auth sheet ${esc(sheetLabel(false))} · Chat ${esc(chatStatus().state)}
     <span class="sp"></span><span class="muted">Demo environment · not a Levi Strauss &amp; Co. system</span>`;
 }
 
@@ -148,7 +149,8 @@ document.addEventListener("submit", e => {
 });
 // "Chat with Stitch" buttons open the UJET widget that the Tampermonkey injector adds to the page
 function openChat() {
-  const w = window.__ujetInjected;
+  if (openUjet()) return;
+  const w = window.__ujetInjected; // Tampermonkey injector, if used instead
   try { if (w && w.show) { w.show(); return; } } catch {}
   toast("Open the Stitch chat with the button in the bottom-right corner");
 }
@@ -156,7 +158,12 @@ function openChat() {
 window.addEventListener("hashchange", () => render());
 window.addEventListener("lsco:data-changed", () => { render({ soft: true }); banner(); });
 state.onChange(async type => {
-  if (type === "session") { syncAuth(state.persona ? "signed in " + state.persona.employeeId : "signed out"); banner(); }
+  if (type === "session") {
+    banner();
+    // 1) save the new auth state to the sheet, 2) restart the chat, which reads that same row
+    await syncAuth(state.persona ? "signed in " + state.persona.employeeId : "signed out");
+    if (state.persona) startChat("sign-in");   // sign-out reloads the page, which starts a guest chat
+  }
   if (type === "datasource") { render(); banner(); }
 });
 
@@ -181,7 +188,8 @@ async function presenter() {
       <button data-pp="sim:hold">Put #322 ticket On Hold – Awaiting Caller (UC 3.1)</button>
       <button data-pp="sim:reset">Reset mock data</button></div></div>` : `<div class="pp-r"><span>Simulate</span><div class="muted">mock mode only</div></div>`}
     <div class="pp-r"><span>Auth sheet</span><div class="mono">${sheetLabel()}</div></div>
-    <div class="pp-r"><span></span><div><button data-pp="resync">Re-send auth state</button></div></div>`;
+    <div class="pp-r"><span>Chat</span><div class="mono">${esc(chatLabel())}</div></div>
+    <div class="pp-r"><span></span><div><button data-pp="resync">Re-send auth state</button><button data-pp="rechat">Restart chat</button></div></div>`;
 }
 document.addEventListener("keydown", e => {
   if (e.shiftKey && e.key.toLowerCase() === CONFIG.PRESENTER_MODE_KEY && !/input|textarea|select/i.test(document.activeElement.tagName)) {
@@ -208,6 +216,8 @@ $("presenter").addEventListener("click", async e => {
     if (msg) toast(await msg());
     // Changes show on the next poll; banner refreshes now
     banner();
+  } else if (a === "rechat") {
+    await syncAuth("manual"); await startChat("manual"); toast("Chat: " + chatLabel());
   } else if (a === "resync") {
     await syncAuth("manual"); const st = authSyncStatus(); toast(st.ok ? "Auth state saved to the sheet" : "Sheet: " + (st.error || "not saved"), st.ok ? "" : "warn");
   }
@@ -221,9 +231,15 @@ function sheetLabel(withUser = true) {
   const who = st.row?.auth_status ? `${st.row.first_name} ${st.row.last_name}` : "no user";
   return (st.ok ? "✓ saved" : st.ok === false ? "✗ " + st.error : "– " + st.error) + (withUser ? " · " + who : "") + " · " + st.at.toLocaleTimeString();
 }
+function chatLabel() {
+  const c = chatStatus();
+  return { ready: "✓ ", starting: "… ", error: "✗ ", off: "– " }[c.state] + (c.detail || c.state);
+}
 onAuthSync(() => { shell(); if (!$("presenter").hidden) presenter(); });
+onChatStatus(() => { shell(); if (!$("presenter").hidden) presenter(); });
 
 /* ---------------- boot ---------------- */
 render();
 banner();
-syncAuth("page load"); // the sheet always matches what the portal shows (also after a refresh)
+// The sheet always matches what the portal shows (also after a refresh), then the chat starts from that row
+syncAuth("page load").then(() => startChat("page load"));
