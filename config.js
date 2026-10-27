@@ -1,5 +1,5 @@
 // Public demo configuration. This file ships to GitHub Pages: NEVER put secrets here.
-// The UJET chat is added by the UJET Web SDK demo kit (Tampermonkey injector), not by the portal.
+// The UJET chat (Web SDK v3) is embedded by js/websdk.js; tenant + secret live in the Google Sheet's Tenant tab.
 export const CONFIG = {
   DATA_SOURCE: "mock",            // "mock" | "api"  (presenter panel can override per browser session)
   API_BASE_URL: "https://levis-portal-auth-XXXX.a.run.app",
@@ -13,6 +13,12 @@ export const CONFIG = {
     url: "https://script.google.com/macros/s/AKfycbySHMQTcccyBg_H_oUsn5zbV8hbocX0ZY84TF79-2BSEfJAqnsDsuOkX8UivtGRlGj0/exec",
     token: "lsco-7f3k9q2x",   // same value as the DEMO_KEY script property (light protection only: this file is public)
     key: "current"                    // row key; use one per presenter if several demos run at once
+  },
+  // Embedded UJET chat. Host, company key and menu keys come from the sheet's Tenant tab (via the Apps Script).
+  CHAT: {
+    enabled: true,
+    accent: "#c41230",               // launcher colour
+    logo: ""                         // optional https:// logo for the chat header
   },
   PRESENTER_MODE_KEY: "p"         // Shift+P toggles the presenter panel
 };
