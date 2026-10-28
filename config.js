@@ -18,7 +18,7 @@ export const CONFIG = {
   CHAT: {
     enabled: true,
     accent: "#c41230",               // launcher colour
-    logo: ""                         // optional https:// logo for the chat header
+    logo: "assets/levi-logo.png"                         // optional https:// logo for the chat header
   },
   PRESENTER_MODE_KEY: "p"         // Shift+P toggles the presenter panel
 };
