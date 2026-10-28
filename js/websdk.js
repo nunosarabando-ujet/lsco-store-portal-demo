@@ -50,13 +50,33 @@ function loadSdk(host) {
   return sdkLoaded;
 }
 
+// One hex colour -> the widget's accent scale + launcher and button colours (same as the UJET demo kit injector)
+function mixHex(hex, other, t) {
+  const a = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)), b = [1, 3, 5].map(i => parseInt(other.slice(i, i + 2), 16));
+  return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, "0")).join("");
+}
+function brandVars(color) {
+  if (!/^#[0-9a-fA-F]{6}$/.test(color || "")) return {};
+  const v = {};
+  [0.97, 0.94, 0.88, 0.8, 0.7, 0.58, 0.45, 0.28].forEach((t, i) => { v["--accent-" + (i + 1)] = mixHex(color, "#ffffff", t); });
+  v["--accent-9"] = color.toLowerCase();
+  v["--accent-10"] = mixHex(color, "#000000", 0.08);
+  v["--accent-11"] = mixHex(color, "#000000", 0.25);
+  v["--accent-12"] = mixHex(color, "#000000", 0.55);
+  v["--launcher-background-color"] = color.toLowerCase();
+  v["--launcher-border-color"] = color.toLowerCase();
+  v["--primary-button-default-background"] = color.toLowerCase();
+  v["--primary-button-hover-background"] = v["--accent-10"];
+  return v;
+}
+
 // Fresh mount node every time (a new node drops the old widget's shadow DOM)
 function freshMount() {
   const old = document.getElementById(MOUNT_ID);
   const el = document.createElement("div");
   el.id = MOUNT_ID;
   el.style.cssText = "position:fixed;right:0;bottom:0;z-index:2147483000;isolation:isolate;";
-  if (CONFIG.CHAT.accent) el.style.setProperty("--launcher-background-color", CONFIG.CHAT.accent);
+  Object.entries(brandVars(CONFIG.CHAT.accent)).forEach(([k, v]) => el.style.setProperty(k, v));
   old ? old.replaceWith(el) : document.body.appendChild(el);
 }
 
@@ -86,7 +106,7 @@ export async function startChat(reason = "") {
     });
     const conf = { customData: w.customData };
     if (w.menuKey) conf.menuKey = w.menuKey;
-    if (CONFIG.CHAT.logo) conf.logo = CONFIG.CHAT.logo;
+    if (CONFIG.CHAT.logo) conf.logo = new URL(CONFIG.CHAT.logo, location.href).href; // "assets/x.png" works too
     ccaas.config(conf);
     ccaas.mount("#" + MOUNT_ID);
     window.__ujetPortal = ccaas;
