@@ -7,7 +7,7 @@
     "storeId": "322",
     "language": "en",
     "employeeId": "E322001",
-    "email": "amanda.scarpin@example.com",
+    "email": "amanda.scarpin@demo.levi.invalid",
     "mobileMasked": "***-***-1234"
   },
   {
@@ -18,7 +18,7 @@
     "storeId": "415",
     "language": "pt",
     "employeeId": "E415001",
-    "email": "joana.ferreira@example.com",
+    "email": "joana.ferreira@demo.levi.invalid",
     "mobileMasked": "+351 *** *** 678"
   }
 ]
