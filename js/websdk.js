@@ -96,14 +96,19 @@ export async function startChat(reason = "") {
     freshMount();
     let first = w.userToken;
     // VERIFY against the tenant's Web SDK v3 snippet if anything misbehaves (same options as the demo kit injector)
-    ccaas = new window.UJET({
+    const opts = {
       companyId: w.companyKey,
       host: "https://" + w.host,
       authenticate: async () => {
         if (first) { const t = first; first = null; return { token: t }; }
         return { token: (await fetchWidget()).userToken }; // token refresh (10 min expiry)
       }
-    });
+    };
+    // Screen Share (cobrowse): license + domain from the sheet's Tenant tab. Without this option the widget creates
+    // chats with cobrowsable=false and the agent never sees "Start Screen Share" (same as the demo kit injector).
+    const ss = CONFIG.CHAT.screenShare !== false ? w.cobrowse : null;
+    if (ss && ss.license) opts.cobrowse = ss;
+    ccaas = new window.UJET(opts);
     const conf = { customData: w.customData };
     if (w.menuKey) conf.menuKey = w.menuKey;
     if (CONFIG.CHAT.logo) conf.logo = new URL(CONFIG.CHAT.logo, location.href).href; // "assets/x.png" works too
@@ -114,10 +119,13 @@ export async function startChat(reason = "") {
     try {
       ccaas.on("visible", v => { wasOpen = !!v; });
       ccaas.on("ready", () => { if (reopen) { try { ccaas.show && ccaas.show(); } catch {} } });
+      ["cobrowse.request", "cobrowse.loaded", "cobrowse.updated", "cobrowse.ended"].forEach(ev =>
+        ccaas.on(ev, d => console.log("[LSCO chat] " + ev, d || "")));
     } catch { /* older SDK */ }
     const who = w.auth.auth_status ? `${w.auth.first_name} ${w.auth.last_name}` : "guest";
-    setStatus("ready", `${w.host} · ${who}`);
-    console.log("[LSCO chat] UJET chat started as", who, w.menuKey ? "(menu " + w.menuKey + ")" : "");
+    const ssOn = !!opts.cobrowse;
+    setStatus("ready", `${w.host} · ${who} · Screen Share ${ssOn ? "on" : "off"}`);
+    console.log("[LSCO chat] UJET chat started as", who, w.menuKey ? "(menu " + w.menuKey + ")" : "", "· Screen Share", ssOn ? "on" : "off (no screenshare_license in Tenant tab)");
   } catch (e) {
     console.error("[LSCO chat]", e);
     setStatus("error", e.message);

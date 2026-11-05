@@ -1,54 +1,77 @@
-# LS&Co. "To Go" mock portal – UJET Levi's showcase demo
-
-Simple structure, agreed with Adam on 19 Oct:
+# Auth table (Google Sheet)
 
 ```
-Web portal (GitHub Pages) ──auth state──▶ Google Sheet (Auth tab) ◀── Cloud Run ◀── Virtual Agent (Adam, later)
-        └── embedded UJET Web SDK v3 chat (svcnow) ◀── login token + signed custom data from the same Apps Script
+Web portal ──writes on load / sign-in / sign-out──▶ Google Sheet "Auth" tab ◀──reads── Cloud Run (SC demo project 2) ◀── Virtual Agent
 ```
 
-- **Portal:** the UI as before (tiles, counters, tickets, orders, devices, KB, simulated Entra ID sign-in with Amanda / Joana). There's no chat or variables column on the right.
-- **Auth sheet:** on page load, sign-in, sign-out and persona switch, the portal writes one row: `auth_status`, `first_name`, `last_name`, `email` (+ `user_id`, `store_id`, `language`). Setup and the VA read contract are in **[sheet/README.md](sheet/README.md)**.
-- **Chat:** the portal embeds the UJET Web SDK v3 itself (`js/websdk.js`). The tenant host, company key and secret are in the sheet's **Tenant** tab. The Apps Script signs the login token and custom data from the Auth row, so the secret never reaches the browser. The chat restarts with the new user on every sign-in, sign-out or persona switch. **Turn the Tampermonkey injector off for this site** (Option+Shift+U → Turn off here), otherwise two chats appear.
+The portal never talks to the VA directly. It keeps one row up to date, and the VA reads that row whenever it needs the auth state. That covers a chat that started before the user signed in.
 
-## Files
+| key | auth_status | first_name | last_name | email | user_id | store_id | language | updated_at | source |
+|---|---|---|---|---|---|---|---|---|---|
+| current | FALSE | | | | | | | 2026-10-19T15:10:00Z | user.github.io |
+| current | TRUE | Amanda | Scarpin | amanda.scarpin@example.com | E322001 | 322 | en | … | … |
+| current | TRUE | Joana | Ferreira | joana.ferreira@example.com | E415001 | 415 | pt | … | … |
+
+These are the three states. There is still only one row, and it is overwritten each time. The **Log** tab keeps every change for testing.
+
+## Setup (~10 min)
+
+1. Create a Google Sheet, e.g. **LSCO demo – auth table**. The script creates the `Auth` and `Log` tabs itself; `auth-table.csv` shows the columns.
+2. Go to **Extensions > Apps Script**, paste `Code.gs` and save.
+3. In **Project Settings > Script properties**, add `DEMO_KEY` = a random string.
+4. Go to **Deploy > New deployment > Web app**. Execute as **Me**, Who has access **Anyone**. Deploy, authorise, and copy the `/exec` URL.
+5. Re-run **setup** once (it adds the **Tenant** tab) and fill in the Tenant tab (above). Then **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**.
+6. In the portal's `config.js`, set `AUTH_SHEET.url` to the `/exec` URL and `AUTH_SHEET.token` to the `DEMO_KEY`. Commit.
+7. Test:
+   - Open the portal: the row shows `FALSE`.
+   - Sign in as Amanda: `TRUE`, Amanda, Scarpin.
+   - Shift+P → Joana: `TRUE`, Joana, Ferreira.
+   - Sign out: `FALSE`.
+
+   The portal footer shows `Auth sheet ✓ saved hh:mm:ss`.
+
+## Embedded chat (UJET Web SDK v3, svcnow tenant)
+
+The portal embeds the UJET chat itself, so Tampermonkey isn't needed on this site. After each auth change, the portal calls `?action=widget`. The script reads the **Auth** row and the **Tenant** tab and returns:
+- the tenant host, company key and menu key
+- a signed login token (guest, or the signed-in user's email and name)
+- signed custom data: `auth_status`, `reserved_verified_customer`, `first_name`, `last_name`, `email`, `user_id`, `store_id`, `language`, `portal_session_id`
+
+The company secret is only used inside the script to sign. It is never sent to the browser.
+
+**Tenant tab** (created by `setup`):
+
+| setting | value |
+|---|---|
+| host | `svcnow.ujetdemo.co` (CCaaS host, no `https://`) |
+| company_key | from UJET **Settings → Developer Settings** (or the SC tenant sheet, column D) |
+| company_secret | Company Secret (SC tenant sheet, column E) |
+| menu_key_guest | optional: chat menu / DAP key for signed-out visitors |
+| menu_key_signed_in | optional: chat menu / DAP key for Amanda / Joana |
+| screenshare_license | Screen Share license key (SC tenant sheet, "Screen Share License"). Empty = Screen Share off |
+| screenshare_domain | `https://cobrowse.io` (default) |
+
+**Screen Share:** with a license in the Tenant tab, the portal passes `cobrowse: { enabled, license, api, trustedOrigins }` to the widget, so new chats are created as cobrowsable and the agent gets **Start Screen Share**. The license is not a secret. Chats started before the change stay non-cobrowsable, so start a new chat to test.
+
+⚠️ Anyone who can open this Google Sheet can read the secret. Share it only with Adam, and keep the link private. A safer option: leave `company_secret` empty and add a **Script property** `COMPANY_SECRET` instead. It takes priority, and it isn't visible in the sheet.
+
+On every sign-in, sign-out or persona switch, the portal ends the current chat and starts a new one with the new user. The VA should still re-read the sheet during a chat (below), because a chat that is already open keeps its starting custom data.
+
+## For the VA (Adam)
 
 ```
-index.html  config.js  css/styles.css
-js/app.js           router, header/banner/footer, polling, presenter panel (Shift+P)
-js/authsheet.js     writes the auth state to the Google Sheet (queued, 1 retry)
-js/websdk.js        embedded UJET chat: gets token + custom data from the Apps Script, restarts on sign-in/out
-js/state.js         signed-in persona (sessionStorage)
-js/router.js  js/i18n.js  js/components/ui.js  js/views/*.js
-js/data/            mock (data/*.json) | api (Prompt B, later)
-data/*.json         personas, stores, tickets, orders, devices, kb, categories, fixtures
-sheet/              Code.gs (Apps Script), auth-table.csv, README.md
+GET <exec URL>?action=get&key=current&token=<DEMO_KEY>
+→ {"ok":true,"auth":{"key":"current","auth_status":true,"first_name":"Amanda","last_name":"Scarpin","email":"amanda.scarpin@example.com","user_id":"E322001","store_id":"322","language":"en","updated_at":"…"}}
 ```
 
-## Run locally
+- **Variables to map:** `auth_status`, `first_name`, `last_name`, `email`. `user_id`, `store_id` and `language` are there if needed later.
+- **Re-read the row before anything account-specific,** not just at chat start. That way a user who signs in mid-chat is picked up.
+- **Redirect:** Apps Script answers with a 302 redirect to `script.googleusercontent.com`. Cloud Run (Node `fetch`, Python `requests`) follows it by default.
+- **Alternative to Apps Script:** Cloud Run can read the sheet directly with the Sheets API. Share the sheet with the Cloud Run service account and read `Auth!A:J`.
 
-```bash
-python3 -m http.server 8080   # in this folder → http://localhost:8080/
-```
+## Notes / limits (keep it simple for now)
 
-## Deploy (GitHub Pages)
-
-1. Replace the repo contents with this folder (keep `.nojekyll` and `robots.txt`). Commit to `main`.
-2. **Settings → Pages:** Deploy from branch `main` / root (already set up if the site is live).
-3. Set up the sheet ([sheet/README.md](sheet/README.md)), then put `AUTH_SHEET.url` and `token` into `config.js`.
-4. Fill in the sheet's **Tenant** tab and redeploy the Apps Script as a new version. In Tampermonkey, turn the injector off for this site.
-
-## Presenter panel (Shift+P)
-
-Switch persona (Amanda / Joana / sign out). Every switch updates the sheet. You can also:
-
-- switch mock/api data
-- force a refresh
-- simulate UC events (iPad order, NYC outage, comment on INC0010234, ticket On Hold)
-- reset mock data
-- **Re-send auth state**: shows the last sheet write
-- **Restart chat**: shows the chat status (`✓ svcnow.ujetdemo.co · Amanda Scarpin`)
-
-## Routes
-
-`#/welcome` `#/locations` `#/locations/:id` `#/login` (public) · `#/` `#/support/:category` `#/tickets` `#/tickets/:number` `#/orders` `#/orders/:number` `#/devices` `#/devices/:serial` `#/kb` `#/kb/:id` `#/store` `#/profile` `#/search?q=` (signed in)
+- **One row = one demo at a time.** If two people demo at once, give each a key (`AUTH_SHEET.key`, e.g. `nuno`) and tell the VA which key to read.
+- **Light security.** The token is visible in the public `config.js`, so it only keeps casual visitors out. Demo data only.
+- **Before a demo,** open the portal signed out (or click Sign out) so the row starts as `FALSE`.
+- **After editing `Code.gs`,** redeploy as a **New version** of the same deployment, otherwise the URL keeps the old code.
