@@ -83,7 +83,7 @@ function freshMount() {
 // Persona language ("en" / "pt") -> UJET widget language code (CONFIG.CHAT.languages). ?chatlang=xx in the URL overrides, for testing.
 function chatLang() {
   try { const q = new URLSearchParams(location.search).get("chatlang"); if (q) return q; } catch {}
-  const map = CONFIG.CHAT.languages || { pt: "pt-PT" };
+  const map = CONFIG.CHAT.languages || { pt: "pt" };
   return state.signedIn ? (map[state.lang] || "") : "";
 }
 

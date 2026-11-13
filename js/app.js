@@ -172,12 +172,12 @@ setInterval(() => { if (!document.hidden && lastView?.poll) render({ soft: true 
 setInterval(() => { if (!document.hidden) banner(); }, CONFIG.BANNER_POLL_MS);
 document.addEventListener("visibilitychange", () => { if (!document.hidden && lastView?.poll) render({ soft: true }); });
 
-/* ---------------- presenter panel (Shift+P) ---------------- */
+/* ---------------- presenter panel (Ctrl+Shift+P) ---------------- */
 async function presenter() {
   const pnl = $("presenter");
   const personas = await data.listPersonas();
   const mockMode = state.dataSource === "mock";
-  pnl.innerHTML = `<div class="pp-h"><b>Presenter</b><span>Shift+P</span></div>
+  pnl.innerHTML = `<div class="pp-h"><b>Presenter</b><span>Ctrl+Shift+P</span></div>
     <div class="pp-r"><span>Persona</span><div>${personas.map(p => `<button data-pp="persona:${p.id}" class="${state.persona?.id === p.id ? "on" : ""}">${esc(p.firstName)}</button>`).join("")}<button data-pp="signout">Sign out</button></div></div>
     <div class="pp-r"><span>Data source</span><div><button data-pp="ds:mock" class="${mockMode ? "on" : ""}">mock</button><button data-pp="ds:api" class="${!mockMode ? "on" : ""}">api</button><button data-pp="refresh">Force refresh</button></div></div>
     ${mockMode ? `<div class="pp-r col"><span>Simulate</span><div class="grid">
@@ -191,8 +191,11 @@ async function presenter() {
     <div class="pp-r"><span>Chat</span><div class="mono">${esc(chatLabel())}</div></div>
     <div class="pp-r"><span></span><div><button data-pp="resync">Re-send auth state</button><button data-pp="rechat">Restart chat</button></div></div>`;
 }
+// Ctrl+Shift+P (Ctrl on Mac too). Never fires while typing, including inside the UJET chat (shadow DOM / iframe).
+const typing = e => e.composedPath().some(el => el && el.nodeType === 1 && (/^(input|textarea|select)$/i.test(el.tagName) || el.isContentEditable));
 document.addEventListener("keydown", e => {
-  if (e.shiftKey && e.key.toLowerCase() === CONFIG.PRESENTER_MODE_KEY && !/input|textarea|select/i.test(document.activeElement.tagName)) {
+  if (e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey && e.code === "Key" + CONFIG.PRESENTER_MODE_KEY.toUpperCase() && !typing(e)) {
+    e.preventDefault();
     const pnl = $("presenter"); pnl.hidden = !pnl.hidden; if (!pnl.hidden) presenter();
   }
 });
