@@ -80,6 +80,13 @@ function freshMount() {
   old ? old.replaceWith(el) : document.body.appendChild(el);
 }
 
+// Persona language ("en" / "pt") -> UJET widget language code (CONFIG.CHAT.languages). ?chatlang=xx in the URL overrides, for testing.
+function chatLang() {
+  try { const q = new URLSearchParams(location.search).get("chatlang"); if (q) return q; } catch {}
+  const map = CONFIG.CHAT.languages || { pt: "pt-PT" };
+  return state.signedIn ? (map[state.lang] || "") : "";
+}
+
 export async function startChat(reason = "") {
   if (!CONFIG.CHAT.enabled) { setStatus("off", "CHAT.enabled is false"); return; }
   if (!C().url || C().url.includes("REPLACE")) { setStatus("error", "sheet URL not configured"); return; }
@@ -106,6 +113,9 @@ export async function startChat(reason = "") {
     };
     // Screen Share (cobrowse): license + domain from the sheet's Tenant tab. Without this option the widget creates
     // chats with cobrowsable=false and the agent never sees "Start Screen Share" (same as the demo kit injector).
+    // Chat language: Joana (pt) starts in Português (Portugal); guest / Amanda keep the tenant default (English US)
+    const lang = chatLang();
+    if (lang) opts.lang = lang;
     const ss = CONFIG.CHAT.screenShare !== false ? w.cobrowse : null;
     if (ss && ss.license) opts.cobrowse = ss;
     ccaas = new window.UJET(opts);
@@ -124,7 +134,7 @@ export async function startChat(reason = "") {
     } catch { /* older SDK */ }
     const who = w.auth.auth_status ? `${w.auth.first_name} ${w.auth.last_name}` : "guest";
     const ssOn = !!opts.cobrowse;
-    setStatus("ready", `${w.host} · ${who} · Screen Share ${ssOn ? "on" : "off"}`);
+    setStatus("ready", `${w.host} · ${who} · ${lang || "default lang"} · Screen Share ${ssOn ? "on" : "off"}`);
     console.log("[LSCO chat] UJET chat started as", who, w.menuKey ? "(menu " + w.menuKey + ")" : "", "· Screen Share", ssOn ? "on" : "off (no screenshare_license in Tenant tab)");
   } catch (e) {
     console.error("[LSCO chat]", e);
